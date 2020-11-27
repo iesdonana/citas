@@ -7,10 +7,10 @@ Aplicación de citas para consulta médica
 
 - Cada cita es de 15 minutos.
 
-- Se le da al usuario la posibilidad de elegir una cita dentro del
-  mes actual.
+- Se le da al usuario la posibilidad de elegir una cita con 30
+  días de antelación respecto al día de hoy.
 
-- El usuario primero selecciona el día.
+- El usuario primero selecciona el día, que no puede ser hoy.
 
 - A continuación, la aplicación le ofrece la opción de elegir los
   huecos libres.
