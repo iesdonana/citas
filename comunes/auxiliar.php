@@ -38,7 +38,7 @@ function conectar()
 
 function volver()
 {
-    header('Location: /usuarios/index.php');
+    header('Location: /index.php');
 }
 
 function error($mensaje)
