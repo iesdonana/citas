@@ -53,11 +53,11 @@
         // Ese usuario no tiene citas vigentes
         // Darle la opción de reservar una
         $sent = $pdo->query('SELECT fecha_hora::date AS fecha
-                            FROM citas
-                            WHERE fecha_hora::date != CURRENT_DATE
-                        GROUP BY 1
-                            HAVING COUNT(*) >= 16
-                        ORDER BY 1');
+                               FROM citas
+                              WHERE fecha_hora::date != CURRENT_DATE
+                           GROUP BY 1
+                             HAVING COUNT(*) >= 16
+                           ORDER BY 1');
         $fechasOcupadas = $sent->fetchAll(PDO::FETCH_COLUMN, 0);
         $fechas = [];
         $intervalo = new DateInterval('P1D');
@@ -101,21 +101,17 @@
                                 ORDER BY 1');
             $sent->execute(['dia' => $dia]);
             $horasOcupadas = $sent->fetchAll(PDO::FETCH_COLUMN, 0);
-            $madrid = new DateTimeZone('Europe/Madrid');
-            foreach ($horasOcupadas as $k => $h) {
-                $hh = DateTime::createFromFormat('H:i:s', $h);
-                $hh->setTimeZone($madrid);
-                $horasOcupadas[$k] = $hh->format('H:i:s');
-            }
             $horas = [];
             $intervalo = new DateInterval('PT15M');
             $utc = new DateTimeZone('UTC');
+            $madrid = new DateTimeZone('Europe/Madrid');
             $horaActual = (new DateTime())->setTimezone($madrid)->setTime(16, 0, 0);
             $horaFin = clone $horaActual;
             $horaFin->setTime(20, 0, 0);
             while ($horaActual < $horaFin) {
-                if (!in_array($horaActual->format('H:i:s'), $horasOcupadas)) {
-                    $horas[] = $horaActual->format('H:i:s');
+                $horaActualUTC = (clone $horaActual)->setTimezone($utc);
+                if (!in_array($horaActualUTC->format('H:i:s'), $horasOcupadas)) {
+                    $horas[] = $horaActualUTC;
                 }
                 $horaActual->add($intervalo);
             } ?>
@@ -124,8 +120,8 @@
                 <label for="hora">Seleccione la hora:</label>
                 <select name="hora" id ="hora">
                     <?php foreach ($horas as $h): ?>
-                        <option value="<?= $h ?>" <?= selected($h, $hora) ?> >
-                            <?= $h ?>
+                        <option value="<?= $h->setTimezone($utc)->format('H:i:s') ?>" <?= selected($h, $hora) ?> >
+                            <?= $h->setTimezone($madrid)->format('H:i:s') ?>
                         </option>
                     <?php endforeach ?>
                 </select>
